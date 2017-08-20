@@ -11,7 +11,7 @@ export class Neuron {
     public constructor(inputs: number) {
         // Note: Arguments array is used because variable name is not found when
         // creating Neurons with with reflections.
-        this.w = linear.Vector.random(arguments[0])
+        this.w = linear.Vector.random(arguments[0] + 1)
     }
 
     /** Gets the input weights of the neuron. */
@@ -24,6 +24,7 @@ export class Neuron {
      * @param activations inputs to be used in the projection. 
      */
     public project(activations: linear.Vector): number {
+        // console.log(`${activations.toString()} . ${this.w.toString()}`) 
         return activations.dot(this.w)
     }
 

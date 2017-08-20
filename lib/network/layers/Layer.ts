@@ -3,6 +3,7 @@ import { Neuron } from "../neurons"
 
 export class Layer {
     protected neurons: Neuron[] = []
+    private result = true;
 
     public constructor(inputs: number, outputs: number, neuron: Function) {
         for (var i = 0; i < outputs; i++) {
@@ -16,11 +17,18 @@ export class Layer {
     }
 
     /**
+     * Makes this layer hidden.
+     */
+    public makeHidden() {
+        this.result = false
+    }
+
+    /**
      * Returns the result of a projection for this layer.
      * @param activations to be applied on the layer.
      */
     public forward(activations: linear.Vector, training = false): linear.Vector {
-        let next_layer_activations = linear.Vector.zeros(0)
+        let next_layer_activations = new linear.Vector(this.result ? [] : [1])
         for (var n = 0; n < this.neurons.length; n++) {
             next_layer_activations.push(this.neurons[n].project(activations))
         }

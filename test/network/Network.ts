@@ -10,19 +10,17 @@ import * as linear from "vectorious"
 @suite("network/Network")
 class Network extends Unit {
     private network: net.Network
-    private ones = new linear.Vector([1 , 1])
+    private ones = new linear.Vector([1, 1])
     
     private internal = [new layers.TestLayer([
-        new nodes.TestNeuron([0.2, 0.4]),
-        new nodes.TestNeuron([0.9, 0.4])
+        new nodes.TestNeuron([1, 0.2, 0.4]),
+        new nodes.TestNeuron([1, 0.9, 0.4]),
+        new nodes.TestNeuron([1, 0.5, 1])
     ])]
 
-    private results = new layers.TestLayer([
-        new nodes.TestNeuron([0.5, 1])
-    ])
-
     before() {
-        this.network = new net.Network(2, 1)
+        this.network = new net.Network(2)
+        this.network.addLayer(nodes.Neuron, 1)
     }
 
     @test "should throw error if incorrect number of inputs is provided to the predict function" () {
@@ -42,15 +40,18 @@ class Network extends Unit {
     }
 
     @test "should produce the right number of outputs after new layer is added" () {
-        this.network.addHiddenLayer(nodes.Neuron, 3)
-        expect(this.network.predict(this.ones).toArray().length).to.be.eq(1)
+        this.network = new net.Network(2)
+        this.network.addLayer(nodes.Neuron, 3)
+        this.network.addLayer(nodes.Neuron, 5)
+        this.network.addLayer(nodes.Neuron, 2)
+        expect(this.network.predict(this.ones).toArray().length).to.be.eq(2)
     }
 
     @test "should produce correct predictions" () {
-        this.network.setLayers(this.internal, this.results)
+        this.network.setLayers(this.internal)
 
         let prediction = this.network.predict(new linear.Vector([0.75, 0.1])).get(0)
-        expect(prediction).to.eq(0.81)
+        expect(prediction).to.eq(1.19)
     }
 
 }

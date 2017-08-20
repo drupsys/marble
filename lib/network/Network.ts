@@ -7,16 +7,14 @@ export class NetworkInputException extends Error {}
 export class NetworkOutputException extends Error {}
 
 export class Network {
-    private internal: Layer[] = []
-    private results: Layer
+    private layers: Layer[] = []
 
     /**
      * Constructs an instance of an artificial neural network.
      * @param inputCount of the neural network.
-     * @param outputCount of the neural network.
      */
-    public constructor(private inputCount: number, private outputCount: number) {
-        this.setResultLayer(inputCount)
+    public constructor(private inputCount: number) {
+
     }
 
     /**
@@ -24,29 +22,21 @@ export class Network {
      * @param neuron that either extends or is Neuron.
      * @param output The number of outputs this layer produces.
      */
-    public addHiddenLayer(neuron: Function, output: number) {
+    public addLayer(neuron: Function, output: number) {
         let inputs: number
-        if (this.internal.length == 0) {
+        if (this.layers.length == 0) {
             inputs = this.inputCount
         } else {
-            inputs = this.internal[this.internal.length - 1].length
+            let last = this.layers[this.layers.length - 1]
+            last.makeHidden()
+            inputs = last.length
         }
 
-        this.internal.push(new Layer(inputs, output, neuron))
-        this.setResultLayer(output)
+        this.layers.push(new Layer(inputs, output, neuron))
     }
-
-    public setLayers(internal: Layer[], results: Layer){
-        this.internal = internal
-        this.results = results
-    }
-
-    /**
-     * Creates and sets the results layer.
-     * @param inputs of the results layer.
-     */
-    private setResultLayer(inputs: number) {
-        this.results = new Layer(inputs, this.outputCount, Neuron)
+    
+    public setLayers(internal: Layer[]){
+        this.layers = internal
     }
 
     /** Gets the number of inputs the artificial neural network should receive. */
@@ -56,13 +46,13 @@ export class Network {
 
     /** Gets the number of outputs that the artificial neuroal network will produce. */
     public get outputs(): number {
-        return this.outputCount
+        if (this.layers.length == 0) return 0;
+        else return this.layers[this.layers.length - 1].length
     }
 
     public train(inputs: linear.Vector, expected: linear.Vector) {
-        if (inputs.toArray().length != this.inputs)
-            throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.toArray().length}`)
-        if (inputs.toArray().length != this.inputs) 
+        this.validateInputs(inputs)
+        if (expected.toArray().length != this.outputs)
             throw new NetworkOutputException(`Expected to get ${this.outputs} but received ${inputs.toArray().length}`)
 
         let result = this.forwardPropagate(inputs, true)
@@ -73,19 +63,23 @@ export class Network {
      * @param inputs array used to predict result.
      */
     public predict(inputs: linear.Vector): linear.Vector {
-        if (inputs.toArray().length != this.inputs) 
-            throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.toArray().length}`)
-        
+        this.validateInputs(inputs)
         return this.forwardPropagate(inputs)
     }
 
+    private validateInputs(inputs: linear.Vector) {
+        if (inputs.toArray().length != this.inputs)
+            throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.toArray().length}`)
+    }
+
     private forwardPropagate(inputs: linear.Vector, training = false): linear.Vector {
-        let activations = inputs
-        for (let i = 0; i < this.internal.length; i++) {
-            activations = this.internal[i].forward(activations)
+        let activations = new linear.Vector([1].concat(inputs.toArray()))
+        for (let i = 0; i < this.layers.length; i++) {
+            activations = this.layers[i].forward(activations)
+            i < this.layers.length - 1
         }
 
-        return this.results.forward(activations)
+        return activations
     }
 
 }
