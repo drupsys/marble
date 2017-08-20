@@ -1,15 +1,14 @@
 import * as linear from "vectorious"
 
-import { Neuron } from "./nodes"
-
-type Layer = Neuron[]
+import { Layer } from "./layers"
+import { Neuron } from "./neurons"
 
 export class NetworkInputException extends Error {}
 export class NetworkOutputException extends Error {}
 
 export class Network {
     private internal: Layer[] = []
-    private results: Layer = []
+    private results: Layer
 
     /**
      * Constructs an instance of an artificial neural network.
@@ -33,12 +32,7 @@ export class Network {
             inputs = this.internal[this.internal.length - 1].length
         }
 
-        let neurons: Neuron[] = []
-        for (var i = 0; i < output; i++) {
-            neurons.push(Reflect.construct(neuron.prototype.constructor, [inputs]))
-        }
-
-        this.internal.push(neurons)
+        this.internal.push(new Layer(inputs, output, neuron))
         this.setResultLayer(output)
     }
 
@@ -52,12 +46,7 @@ export class Network {
      * @param inputs of the results layer.
      */
     private setResultLayer(inputs: number) {
-        let neurons: Neuron[] = []
-        for (var i = 0; i < this.outputCount; i++) {
-            neurons.push(new Neuron(inputs))
-        }
-
-        this.results = neurons
+        this.results = new Layer(inputs, this.outputCount, Neuron)
     }
 
     /** Gets the number of inputs the artificial neural network should receive. */
@@ -70,13 +59,13 @@ export class Network {
         return this.outputCount
     }
 
-    public train(inputs: number[], expected: number[]) {
-        if (inputs.length != this.inputs)
-            throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.length}`)
-        if (inputs.length != this.inputs) 
-            throw new NetworkOutputException(`Expected to get ${this.outputs} but received ${inputs.length}`)
+    public train(inputs: linear.Vector, expected: linear.Vector) {
+        if (inputs.toArray().length != this.inputs)
+            throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.toArray().length}`)
+        if (inputs.toArray().length != this.inputs) 
+            throw new NetworkOutputException(`Expected to get ${this.outputs} but received ${inputs.toArray().length}`)
 
-
+        let result = this.forwardPropagate(inputs, true)
     }
 
     /**
@@ -87,25 +76,16 @@ export class Network {
         if (inputs.toArray().length != this.inputs) 
             throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.toArray().length}`)
         
+        return this.forwardPropagate(inputs)
+    }
+
+    private forwardPropagate(inputs: linear.Vector, training = false): linear.Vector {
         let activations = inputs
         for (let i = 0; i < this.internal.length; i++) {
-            activations = this.forward(this.internal[i], activations)
+            activations = this.internal[i].forward(activations)
         }
 
-        return this.forward(this.results, activations);
+        return this.results.forward(activations)
     }
 
-    /**
-     * Returns the result of a projection.
-     * @param layer to be projected.
-     * @param activations to be applied on the layer.
-     */
-    private forward(layer: Layer, activations: linear.Vector): linear.Vector {
-        let next_layer_activations = linear.Vector.zeros(0)
-        for (var n = 0; n < layer.length; n++) {
-            next_layer_activations.push(layer[n].project(activations))
-        }
-
-        return next_layer_activations
-    }
 }

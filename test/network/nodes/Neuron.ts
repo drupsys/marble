@@ -2,7 +2,7 @@
 /// <reference path="../../../defs.d.ts" />
 
 import { Unit, expect } from "../../Unit"
-import * as nodes from '../../../lib/network/nodes'
+import * as nodes from '../../../lib/network/neurons'
 import * as linear from "vectorious"
 
 @suite("network/nodes/Neuron")
@@ -27,7 +27,7 @@ class Neuron extends Unit {
     }
 
     @test "expect project function to produce correct results" () {
-        let n = new nodes.NeuronTest([0.5, 0.25])
+        let n = new nodes.TestNeuron([0.5, 0.25])
         expect(n.project(new linear.Vector([0.5, 2]))).to.be.eq(0.75)
     }
 

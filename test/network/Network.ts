@@ -3,20 +3,23 @@
 
 import { Unit, expect } from "../Unit"
 import * as net from '../../lib/network'
-import * as nodes from '../../lib/network/nodes'
+import * as nodes from '../../lib/network/neurons'
+import * as layers from '../../lib/network/layers'
 import * as linear from "vectorious"
 
 @suite("network/Network")
 class Network extends Unit {
     private network: net.Network
     private ones = new linear.Vector([1 , 1])
-    private internal = [[
-        new nodes.NeuronTest([0.2, 0.4]),
-        new nodes.NeuronTest([0.9, 0.4])
-    ]]
-    private results = [
-        new nodes.NeuronTest([0.5, 1])
-    ]
+    
+    private internal = [new layers.TestLayer([
+        new nodes.TestNeuron([0.2, 0.4]),
+        new nodes.TestNeuron([0.9, 0.4])
+    ])]
+
+    private results = new layers.TestLayer([
+        new nodes.TestNeuron([0.5, 1])
+    ])
 
     before() {
         this.network = new net.Network(2, 1)

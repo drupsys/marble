@@ -29,7 +29,7 @@ export class Neuron {
 
 }
 
-export class NeuronTest extends Neuron {
+export class TestNeuron extends Neuron {
     
     public constructor(weights: number[]) {
         super(0);
