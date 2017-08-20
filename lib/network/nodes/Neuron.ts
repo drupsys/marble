@@ -1,26 +1,22 @@
 import * as linear from "vectorious"
 
 export class NeuronInputException extends Error {}
-
 export class Neuron {
-    private w: linear.Vector
+    protected w: linear.Vector
 
     /**
      * Constructs an instance of the neuron.
      * @param inputs count of the neuron.
      */
     public constructor(inputs: number) {
-        let randomized = []
-        for (var i = 0; i < inputs; i++) {
-            randomized.push(Math.nextBoundFloat(-1, 1))
-        }
-
-        this.w = new linear.Vector(randomized)
+        // Note: Arguments array is used because variable name is not found when
+        // creating Neurons with with reflections.
+        this.w = linear.Vector.random(arguments[0])
     }
 
     /** Gets the input weights of the neuron. */
-    public get weights(): linear.Vector {
-        return this.w
+    public get weights(): number[] {
+        return this.w.toArray();
     }
 
     /**
@@ -28,7 +24,16 @@ export class Neuron {
      * @param activations inputs to be used in the projection. 
      */
     public project(activations: linear.Vector): number {
-        return this.weights.dot(activations);
+        return activations.dot(this.w)
+    }
+
+}
+
+export class NeuronTest extends Neuron {
+    
+    public constructor(weights: number[]) {
+        super(0);
+        this.w = new linear.Vector(weights);
     }
 
 }

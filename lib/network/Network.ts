@@ -22,18 +22,29 @@ export class Network {
 
     /**
      * Adds a new hidden layer to the network.
-     * @param neuron Constructor of any class that extends Neuron.
+     * @param neuron that either extends or is Neuron.
      * @param output The number of outputs this layer produces.
      */
-    public addHiddenLayer(neuron: object, output: number) {
+    public addHiddenLayer(neuron: Function, output: number) {
+        let inputs: number
+        if (this.internal.length == 0) {
+            inputs = this.inputCount
+        } else {
+            inputs = this.internal[this.internal.length - 1].length
+        }
+
         let neurons: Neuron[] = []
-        let lastHiddenLayer = this.internal[this.internal.length - 1]
         for (var i = 0; i < output; i++) {
-            neurons.push(neuron.constructor(lastHiddenLayer.length))
+            neurons.push(Reflect.construct(neuron.prototype.constructor, [inputs]))
         }
 
         this.internal.push(neurons)
         this.setResultLayer(output)
+    }
+
+    public setLayers(internal: Layer[], results: Layer){
+        this.internal = internal
+        this.results = results
     }
 
     /**
@@ -72,16 +83,16 @@ export class Network {
      * Predicts results based on inputs.
      * @param inputs array used to predict result.
      */
-    public predict(inputs: number[]): number[] {
-        if (inputs.length != this.inputs) 
-            throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.length}`)
-
-        let activations = new linear.Vector(inputs)
+    public predict(inputs: linear.Vector): linear.Vector {
+        if (inputs.toArray().length != this.inputs) 
+            throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.toArray().length}`)
+        
+        let activations = inputs
         for (let i = 0; i < this.internal.length; i++) {
             activations = this.forward(this.internal[i], activations)
         }
 
-        return this.forward(this.results, activations).toArray();
+        return this.forward(this.results, activations);
     }
 
     /**
@@ -90,11 +101,11 @@ export class Network {
      * @param activations to be applied on the layer.
      */
     private forward(layer: Layer, activations: linear.Vector): linear.Vector {
-        let next_layer_activations = [];
+        let next_layer_activations = linear.Vector.zeros(0)
         for (var n = 0; n < layer.length; n++) {
-            next_layer_activations[n] = layer[n].project(activations)
+            next_layer_activations.push(layer[n].project(activations))
         }
-        
-        return new linear.Vector(next_layer_activations)
+
+        return next_layer_activations
     }
 }

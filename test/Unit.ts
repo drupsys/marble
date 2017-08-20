@@ -1,3 +1,10 @@
+import * as chai from 'chai'
+import * as sinon from 'sinon'
+
+export let expect = chai.expect
+export let assert = chai.assert
+export let $ = sinon
+
 interface Math {
     nextFloat(): number
     nextBoundFloat(min: number, max: number): number
