@@ -1,0 +1,38 @@
+{
+  "name": "marble",
+  "version": "0.0.1",
+  "description": "Api to generate artificial neural networks.",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "tsc && mocha",
+    "watch": "mocha-typescript-watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drupsys/marble.git"
+  },
+  "keywords": [
+    "ai",
+    "neural",
+    "network",
+    "artificial"
+  ],
+  "author": "Dovydas Rupsys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/drupsys/marble/issues"
+  },
+  "homepage": "https://github.com/drupsys/marble#readme",
+  "devDependencies": {
+    "@types/chai": "^4.0.3",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.24",
+    "@types/sinon": "^2.3.3",
+    "chai": "^4.1.1",
+    "mocha": "^3.5.0",
+    "mocha-typescript": "^1.1.7",
+    "sinon": "^3.2.1",
+    "source-map-support": "^0.4.16",
+    "typescript": "^2.4.2"
+  }
+}
