@@ -28,11 +28,13 @@
     "@types/mocha": "^2.2.41",
     "@types/node": "^8.0.24",
     "@types/sinon": "^2.3.3",
+    "@types/vectorious": "^4.3.3",
     "chai": "^4.1.1",
     "mocha": "^3.5.0",
     "mocha-typescript": "^1.1.7",
     "sinon": "^3.2.1",
     "source-map-support": "^0.4.16",
-    "typescript": "^2.4.2"
+    "typescript": "^2.4.2",
+    "vectorious": "^4.8.1"
   }
 }
