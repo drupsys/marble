@@ -3,8 +3,14 @@ import { Neuron } from "../neurons"
 
 export class Layer {
     protected neurons: Neuron[] = []
-    private result = true;
+    private outputLayer = true;
 
+    /**
+     * Constructs the layer object.
+     * @param inputs number.
+     * @param outputs number.
+     * @param neuron type to be used in this layer.
+     */
     public constructor(inputs: number, outputs: number, neuron: Function) {
         for (var i = 0; i < outputs; i++) {
             this.neurons.push(
@@ -12,15 +18,19 @@ export class Layer {
         }
     }
 
+    /** Gets the number of neurons at this layer. */
     public get length(): number {
         return this.neurons.length
     }
 
-    /**
-     * Makes this layer hidden.
-     */
+    /** Gets the number of neurons at this layer. */
+    public get output(): boolean {
+        return this.outputLayer
+    }
+
+    /** Makes this layer hidden. */
     public makeHidden() {
-        this.result = false
+        this.outputLayer = false
     }
 
     /**
@@ -28,7 +38,7 @@ export class Layer {
      * @param activations to be applied on the layer.
      */
     public forward(activations: linear.Vector, training = false): linear.Vector {
-        let next_layer_activations = new linear.Vector(this.result ? [] : [1])
+        let next_layer_activations = new linear.Vector(this.outputLayer ? [] : [1])
         for (var n = 0; n < this.neurons.length; n++) {
             next_layer_activations.push(this.neurons[n].project(activations))
         }

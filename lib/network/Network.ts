@@ -35,6 +35,10 @@ export class Network {
         this.layers.push(new Layer(inputs, output, neuron))
     }
     
+    /**
+     * Sets the internal layers with the provided ones.
+     * @param internal internal layers.
+     */
     public setLayers(internal: Layer[]){
         this.layers = internal
     }
@@ -67,11 +71,20 @@ export class Network {
         return this.forwardPropagate(inputs)
     }
 
+    /**
+     * Checks if the right number of inputs has been provided.
+     * @param inputs inputs to be validated.
+     */
     private validateInputs(inputs: linear.Vector) {
         if (inputs.toArray().length != this.inputs)
             throw new NetworkInputException(`Expected to get ${this.inputs} but received ${inputs.toArray().length}`)
     }
 
+    /**
+     * Performs the forward propagation.
+     * @param inputs inputs used to predict outputs.
+     * @param training boolean used to enable training mode.
+     */
     private forwardPropagate(inputs: linear.Vector, training = false): linear.Vector {
         let activations = new linear.Vector([1].concat(inputs.toArray()))
         for (let i = 0; i < this.layers.length; i++) {
