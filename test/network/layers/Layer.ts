@@ -3,7 +3,7 @@
 
 import { Unit, expect } from "../../Unit"
 import * as layers from '../../../lib/network/layers'
-import { TestNeuron, Neuron } from '../../../lib/network/neurons'
+import { TestLinearNeuron, Neuron } from '../../../lib/network/neurons'
 import * as linear from "vectorious"
 
 @suite("network/layers/Layer")
@@ -29,8 +29,8 @@ class Layer extends Unit {
 
     @test "should produce the right results" () {
         this.layer = new layers.TestLayer([
-            new TestNeuron([1, 2, 5]),
-            new TestNeuron([1, 3, 1]),
+            new TestLinearNeuron([1, 2, 5]),
+            new TestLinearNeuron([1, 3, 1]),
         ])
         
         let results = this.layer.forward(new linear.Vector([1, 2, 2]))

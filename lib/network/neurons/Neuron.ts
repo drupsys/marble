@@ -1,7 +1,7 @@
 import * as linear from "vectorious"
 
 export class NeuronInputException extends Error {}
-export class Neuron {
+export abstract class Neuron {
     protected w: linear.Vector
 
     /**
@@ -20,21 +20,21 @@ export class Neuron {
     }
 
     /**
+     * Defines the type of activation function used.
+     * @param projection number produced by the projection.
+     */
+    public abstract hypothesis(projection: number): number;
+
+    public abstract derivative(error: number): number;
+
+    /**
      * Applies activation with the weights and reurns the result of the operation.
      * @param activations inputs to be used in the projection. 
      */
     public project(activations: linear.Vector): number {
         // console.log(`${activations.toString()} . ${this.w.toString()}`) 
-        return activations.dot(this.w)
-    }
-
-}
-
-export class TestNeuron extends Neuron {
-    
-    public constructor(weights: number[]) {
-        super(0);
-        this.w = new linear.Vector(weights);
+        let projection = activations.dot(this.w)
+        return this.hypothesis(projection)
     }
 
 }
