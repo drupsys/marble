@@ -10,7 +10,7 @@ class Neuron extends Unit {
     private neuron: nodes.Neuron
 
     before() {
-        this.neuron = new nodes.Neuron(2)
+        this.neuron = new nodes.LinearNeuron(2)
     }
 
     @test "expect neuron to have default weights between -1 and 1" () {
@@ -28,7 +28,7 @@ class Neuron extends Unit {
     }
 
     @test "expect project function to produce correct results" () {
-        let n = new nodes.TestNeuron([0.5, 0.5, 0.25])
+        let n = new nodes.TestLinearNeuron([0.5, 0.5, 0.25])
         expect(n.project(new linear.Vector([1, 0.5, 2]))).to.be.eq(1.25)
     }
 

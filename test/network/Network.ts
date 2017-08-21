@@ -13,14 +13,14 @@ class Network extends Unit {
     private ones = new linear.Vector([1, 1])
     
     private internal = [new layers.TestLayer([
-        new nodes.TestNeuron([1, 0.2, 0.4]),
-        new nodes.TestNeuron([1, 0.9, 0.4]),
-        new nodes.TestNeuron([1, 0.5, 1])
+        new nodes.TestLinearNeuron([1, 0.2, 0.4]),
+        new nodes.TestLinearNeuron([1, 0.9, 0.4]),
+        new nodes.TestLinearNeuron([1, 0.5, 1])
     ])]
 
     before() {
         this.network = new net.Network(2)
-        this.network.addLayer(nodes.Neuron, 1)
+        this.network.addLayer(nodes.LinearNeuron, 1)
     }
 
     @test "should throw error if incorrect number of inputs is provided to the predict function" () {
@@ -41,9 +41,9 @@ class Network extends Unit {
 
     @test "should produce the right number of outputs after new layer is added" () {
         this.network = new net.Network(2)
-        this.network.addLayer(nodes.Neuron, 3)
-        this.network.addLayer(nodes.Neuron, 5)
-        this.network.addLayer(nodes.Neuron, 2)
+        this.network.addLayer(nodes.LinearNeuron, 3)
+        this.network.addLayer(nodes.LinearNeuron, 5)
+        this.network.addLayer(nodes.LinearNeuron, 2)
         expect(this.network.predict(this.ones).toArray().length).to.be.eq(2)
     }
 
