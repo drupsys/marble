@@ -3,7 +3,7 @@
 
 import { Unit, expect } from "../../Unit"
 import * as layers from '../../../lib/network/layers'
-import { TestLinearNeuron, Neuron } from '../../../lib/network/neurons'
+import { TestLinearNeuron, LinearNeuron } from '../../../lib/network/neurons'
 import * as linear from "vectorious"
 
 @suite("network/layers/Layer")
@@ -11,7 +11,7 @@ class Layer extends Unit {
     private layer: layers.Layer
 
     before() {
-        this.layer = new layers.Layer(2, 3, Neuron)
+        this.layer = new layers.Layer(2, 3, LinearNeuron)
     }
 
     @test "should have the right number of nodes" () {

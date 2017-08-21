@@ -7,8 +7,8 @@ export class LinearNeuron extends Neuron {
         return projection;
     }
 
-    public derivative(error: number): number {
-        return error
+    public derivative(projection: number): number {
+        return projection
     }
 
 }

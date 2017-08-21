@@ -1,5 +1,5 @@
 import * as linear from "vectorious"
-import { Neuron } from "../neurons"
+import { Neuron } from "../neurons/Neuron"
 
 export class Layer {
     protected neurons: Neuron[] = []

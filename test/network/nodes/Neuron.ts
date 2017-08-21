@@ -5,9 +5,9 @@ import { Unit, expect } from "../../Unit"
 import * as nodes from '../../../lib/network/neurons'
 import * as linear from "vectorious"
 
-@suite("network/nodes/Neuron")
-class Neuron extends Unit {
-    private neuron: nodes.Neuron
+@suite("network/nodes/LinearNeuron")
+class LinearNeuron extends Unit {
+    private neuron: nodes.LinearNeuron
 
     before() {
         this.neuron = new nodes.LinearNeuron(2)

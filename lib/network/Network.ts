@@ -1,7 +1,6 @@
 import * as linear from "vectorious"
 
 import { Layer } from "./layers"
-import { Neuron } from "./neurons"
 
 export class NetworkInputException extends Error {}
 export class NetworkOutputException extends Error {}

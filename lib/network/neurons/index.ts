@@ -1,2 +1,2 @@
-export { Neuron, NeuronInputException } from "./Neuron"
+export { NeuronInputException } from "./Neuron"
 export { LinearNeuron, TestLinearNeuron } from "./LinearNeuron"
