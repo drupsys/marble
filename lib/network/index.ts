@@ -1,1 +1,1 @@
-export { Network, NetworkInputException, NetworkOutputException } from "./Network"
+export { Network, NetworkInputException, NetworkOutputException, NetworkTrainingException } from "./Network"

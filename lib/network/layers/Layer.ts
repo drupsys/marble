@@ -1,58 +1,65 @@
 import * as linear from "vectorious"
 import { Neuron } from "../neurons/Neuron"
 
+export function create<T extends Layer>(object: T, weights: linear.Matrix): T {
+    (<any>object).weights = weights
+    return object
+}
+
+export type Operator = (x: number) => number
+export class LayerException extends Error {}
+
 export class Layer {
-    protected neurons: Neuron[] = []
-    private outputLayer = true;
+    private inputs: number
+    private outputs: number
+    protected weights: linear.Matrix
+    private h: Operator = (x) => { return x }
+    private d: Operator = (x) => { return 1 }
 
     /**
      * Constructs the layer object.
      * @param inputs number.
      * @param outputs number.
-     * @param neuron type to be used in this layer.
+     * @param hypothesis used when activating.
+     * @param derivative used during backprop.
      */
-    public constructor(inputs: number, outputs: number, neuron: Function) {
-        for (var i = 0; i < outputs; i++) {
-            this.neurons.push(
-                Reflect.construct(neuron.prototype.constructor, [inputs]))
-        }
+    public constructor(inputs: number, outputs: number, h?: Operator, d?: Operator) {
+        this.inputs = inputs
+        this.createWeights(outputs)
+
+        if (h) this.h = h
+        if (d) this.d = d
+    }
+
+    /**
+     * Generates random weights based on the number of outputs.
+     * @param outputs the number of outputs this layer produces.
+     */
+    public createWeights(outputs: number) {
+        this.outputs = outputs
+        this.weights = linear.Matrix.random(outputs, this.inputs + 1)
     }
 
     /** Gets the number of neurons at this layer. */
     public get length(): number {
-        return this.neurons.length
-    }
-
-    /** Gets the number of neurons at this layer. */
-    public get output(): boolean {
-        return this.outputLayer
-    }
-
-    /** Makes this layer hidden. */
-    public makeHidden() {
-        this.outputLayer = false
+        return this.inputs
     }
 
     /**
      * Returns the result of a projection for this layer.
      * @param activations to be applied on the layer.
      */
-    public forward(activations: linear.Vector, training = false): linear.Vector {
-        let next_layer_activations = new linear.Vector(this.outputLayer ? [] : [1])
-        for (var n = 0; n < this.neurons.length; n++) {
-            next_layer_activations.push(this.neurons[n].project(activations))
-        }
+    public forward(activations: linear.Matrix): linear.Matrix {
+        if (activations.shape[0] != 1 || activations.shape[1] != this.inputs)
+            throw new LayerException(`shape does not match; expected [1,${this.inputs}], actual [${activations.shape}]`)
 
-        return next_layer_activations
+        activations = new linear.Matrix([[1].concat(activations.toArray()[0])])
+
+        return activations.multiply(this.weights.transpose()).map(this.h)
     }
 
-}
-
-export class TestLayer extends Layer {
-
-    public constructor(neurons: Neuron[]) {
-        super(0, 0, Neuron)
-        this.neurons = neurons
+    public backward(actual: linear.Matrix, expected: linear.Matrix) {
+        
     }
 
 }

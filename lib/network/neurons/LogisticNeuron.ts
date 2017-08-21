@@ -1,27 +1,31 @@
 import * as linear from "vectorious"
 import { Neuron } from "./Neuron"
 
-export class LinearNeuron extends Neuron {
-
+export class LogisticNeuron extends Neuron {
+    
     /**
-     * Return linear hypothesys, f(x) = x
+     * Return logistic hypothesys, 
+     * f(x) = 1 / (1 + e^(-x))
      * @param projection number
      */
     public hypothesis(projection: number): number {
-        return projection;
+        return 1.0 / (1 + Math.exp(-projection));
     }
 
     /**
-     * Return linear derivative, f(x) = 1
+     * Return logistic derivative, 
+     * f(x) = h(x) * (1 - h(x))
+     * h(x) = 1 / (1 + e^(-x))
      * @param projection number
      */
     public derivative(projection: number): number {
-        return 1
+        let x = this.hypothesis(projection)
+        return x * (1 - x)
     }
-
+    
 }
 
-export class TestLinearNeuron extends LinearNeuron {
+export class TestLogisticNeuron extends LogisticNeuron {
     
     public constructor(weights: number[]) {
         super(0);

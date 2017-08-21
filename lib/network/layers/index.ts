@@ -1,1 +1,1 @@
-export { Layer, TestLayer } from "./Layer"
+export { Layer, LayerException, Operator, create } from "./Layer"
