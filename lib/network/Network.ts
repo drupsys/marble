@@ -14,7 +14,8 @@ export class Network {
      * Constructs an instance of an artificial neural network.
      * @param inputCount of the neural network.
      * @param outputCount of the neural network.
-     * @param operations defines the hypothesis and derivative used by the layer.
+     * @param h defines the hypothesis function used by this layer.
+     * @param d defines the derivative function used by this layer.
      */
     public constructor(private inputCount: number, private outputCount: number, h?: layer.Operator, d?: layer.Operator) {
         this.layers.push(new layer.Layer(inputCount, outputCount, h, d))
@@ -23,7 +24,8 @@ export class Network {
     /**
      * Adds a new hidden layer to the network.
      * @param inputs The number of inputs this layer accepts.
-     * @param operations defines the hypothesis and derivative used by the layer.
+     * @param h defines the hypothesis function used by this layer.
+     * @param d defines the derivative function used by this layer.
      */
     public addLayer(inputs: number, h?: layer.Operator, d?: layer.Operator) {
         let lastLayer = this.layers[this.layers.length - 1]

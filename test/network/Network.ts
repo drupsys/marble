@@ -3,7 +3,6 @@
 
 import { Unit, expect } from '../Unit'
 import * as net from '../../lib/network'
-import * as nodes from '../../lib/network/neurons'
 import * as layers from '../../lib/network/layers'
 import * as linear from 'vectorious'
 

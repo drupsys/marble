@@ -3,7 +3,6 @@
 
 import { Unit, expect } from "../../Unit"
 import * as layer from '../../../lib/network/layers'
-import { TestLinearNeuron, LinearNeuron } from '../../../lib/network/neurons'
 import * as linear from "vectorious"
 import * as sinon from "sinon"
 

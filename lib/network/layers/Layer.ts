@@ -1,5 +1,4 @@
 import * as linear from "vectorious"
-import { Neuron } from "../neurons/Neuron"
 
 export function create<T extends Layer>(object: T, weights: linear.Matrix): T {
     (<any>object).weights = weights
