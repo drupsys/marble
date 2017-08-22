@@ -36,7 +36,7 @@ export class Layer {
      */
     public createWeights(outputs: number) {
         this.outputs = outputs
-        this.weights = linear.Matrix.random(outputs, this.inputs + 1)
+        this.weights = linear.Matrix.random(this.inputs + 1, outputs)
     }
 
     /** Gets the number of neurons at this layer. */
@@ -53,8 +53,9 @@ export class Layer {
             throw new LayerException(`shape does not match; expected [1,${this.inputs}], actual [${activations.shape}]`)
 
         activations = new linear.Matrix([[1].concat(activations.toArray()[0])])
-
-        return activations.multiply(this.weights.transpose()).map(this.h)
+        console.dir(activations.toArray())
+        console.dir(this.weights.toArray())
+        return activations.multiply(this.weights).map(this.h)
     }
 
     public backward(actual: linear.Matrix, expected: linear.Matrix) {
