@@ -48,20 +48,32 @@ export class Network {
 
     /** Gets the number of outputs that the artificial neuroal network will produce. */
     public get outputs(): number {
-        if (this.layers.length == 0) return 0;
-        else return this.layers[this.layers.length - 1].length
+        return this.outputCount
     }
 
-    public train(activations: linear.Matrix[], expectations: linear.Matrix[]) {
-        // let cost = linear.Vector.zeros(this.outputs)
-        this.validateInputs(activations, expectations, (activation, expectation) => {
-            // let result = this.forwardPropagate(activation, true)
-            // let error = expectation.subtract(result)
-            // cost.add(error.map((e) => { return 0.5 * (e ^ 2) }))
-
-            this.backwardPropagate(this.forwardPropagate(activation, true), expectation)
+    private calcError(estimate: linear.Matrix, target: linear.Matrix) {
+        let total = 0
+        target.subtract(estimate).each((x) => {
+            total += 0.5 * (x ** 2)
         })
 
+        return total
+    }
+
+    public train(inputs: linear.Matrix[], expectations: linear.Matrix[]) {
+        this.validateInputs(inputs, expectations, (expected, input) => {
+            this.forwardPropagate(input, true)
+            this.backwardPropagate(expected)
+        })
+    }
+    
+    public cost(inputs: linear.Matrix[], expectations: linear.Matrix[]) {
+        let cost = 0
+        this.validateInputs(inputs, expectations, (expected, input) => {
+            cost += this.calcError(this.forwardPropagate(input, true), expected)
+        })
+
+        return cost
     }
 
     /**
@@ -70,28 +82,29 @@ export class Network {
      */
     public predict(inputs: linear.Matrix): linear.Matrix {
         this.validateInputs([inputs])
-        return this.forwardPropagate(inputs)
+        return this.forwardPropagate(inputs, false)
     }
 
     /**
      * Checks if the right number of inputs has been provided.
      * @param inputs inputs to be validated.
      */
-    private validateInputs(inputs: linear.Matrix[], expectations?: linear.Matrix[], callback?: ((activation: linear.Matrix, expectation: linear.Matrix) => void)) {
+    private validateInputs(inputs: linear.Matrix[], expectations?: linear.Matrix[], callback?: ((expected: linear.Matrix, input: linear.Matrix) => void)) {
         if (expectations && inputs.length != expectations.length)
             throw new NetworkTrainingException(`received ${inputs.length} inputs and ${expectations.length} expectations`)
         
         for (var i = 0; i < inputs.length; i++) {
-            var activation = inputs[i];
-            if (activation.toArray().length != this.inputs)
-                throw new NetworkInputException(`Expected to get ${this.inputs} but received ${activation.toArray().length}`)
+            var input = inputs[i];
+            if (input.toArray()[0].length != this.inputs)
+                throw new NetworkInputException(`Expected to get ${this.inputs} but received ${input.toArray()[0].length}`)
 
             if (expectations) {
                 var expectation = expectations[i];
-                if (expectation.toArray().length != this.outputs)
-                    throw new NetworkOutputException(`Expected to get ${this.outputs} but received ${expectation.toArray().length}`)
                 
-                if (callback) callback(activation, expectation)
+                if (expectation.toArray()[0].length != this.outputs)
+                    throw new NetworkOutputException(`Expected to get ${this.outputs} but received ${expectation.toArray()[0].length}`)
+                
+                if (callback) callback(expectation, input)
             }
         }
     }
@@ -101,17 +114,45 @@ export class Network {
      * @param inputs inputs used to predict outputs.
      * @param training boolean used to enable training mode.
      */
-    private forwardPropagate(inputs: linear.Matrix, training = false): linear.Matrix {
+    private forwardPropagate(inputs: linear.Matrix, training: boolean): linear.Matrix {
         for (let i = 0; i < this.layers.length; i++) {
-            inputs = this.layers[i].forward(inputs)
+            inputs = this.layers[i].forward(inputs, training)
         }
 
         return inputs
     }
 
-    private backwardPropagate(actual: linear.Matrix, expected: linear.Matrix) {
-        for (var i = this.layers.length - 1; i > 0; i--) {
-            this.layers[i].backward(actual, expected)
+    private backwardPropagate(result: linear.Matrix) {
+        let nextLayer = this.layers[this.layers.length - 1]
+        console.dir(`error: ${result.toArray()}`)
+
+        let nextDelta = nextLayer.hypothesis.subtract(result)
+            .product(nextLayer.signal.map(nextLayer.derivative))
+        console.dir(`delta: ${nextDelta.toArray()}`)
+        
+        let nextChange = nextLayer.hypothesis.T.multiply(nextDelta)
+        console.dir(`hyp: ${nextLayer.hypothesis.T}`)
+        console.dir(`change: ${nextChange.toArray()}`)
+        
+        for (var i = this.layers.length - 2; i >= 0; i--) {
+            let currentLayer = this.layers[i]
+
+            // console.dir(nextDelta.multiply(nextLayer.weights.T).toArray())
+            // console.dir(nextLayer.weights.multiply(nextDelta).toArray())
+            // console.dir(currentLayer.received.map(currentLayer.derivative).toArray())
+
+            let currentDelta = nextLayer.weights.T.multiply(nextDelta)
+                .product(currentLayer.signal.map(currentLayer.derivative))
+            let currentChange = currentLayer.signal.T.multiply(currentDelta)
+
+            nextLayer.apply(nextChange, 0.01)
+
+            nextLayer = currentLayer
+            nextDelta = currentDelta
+            nextChange = currentChange
         }
+
+        nextLayer.apply(nextChange, 0.01)
+        return result
     }
 }

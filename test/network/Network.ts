@@ -8,7 +8,7 @@ import * as linear from 'vectorious'
 
 @suite("network/Network")
 class Network extends Unit {
-    // private network: net.Network
+    private network: net.Network
     // private ones = new linear.Vector([1, 1])
     
     // private internal = [new layers.TestLayer([
@@ -17,10 +17,30 @@ class Network extends Unit {
     //     new nodes.TestLinearNeuron([1, 0.5, 1])
     // ])]
 
-    // before() {
-    //     this.network = new net.Network(2)
-    //     this.network.addLayer(nodes.LinearNeuron, 1)
-    // }
+    before() {
+        // this.network = new net.Network(3, 1, layers.LOGISTIC, layers.DLOGISTIC)
+        // this.network.addLayer(2, layers.LOGISTIC, layers.DLOGISTIC)
+    }
+
+    @test "something" () {
+        let network = new net.Network(1, 1)
+        let layer = new layers.Layer(1, 1, layers.BENT_IDENTITY, layers.BENT_IDENTITY_PRIME)
+        layer = layers.create(layer, [[0.35]], [[-0.35]])
+        network.setLayers([layer])
+
+        let input = new linear.Matrix([[2]])
+        let expected = new linear.Matrix([[-9.35]])
+        
+        let cost = network.cost([input], [expected])
+        for (var i = 0; i <5; i++) {
+            network.train([input], [expected])
+        }
+
+        console.log(cost)
+        console.log(network.cost([input], [expected]))
+        console.dir(network.predict(input).toArray())
+        expect(network.cost([input], [expected])).to.be.lt(cost)
+    }
 
     // @test "should throw error if incorrect number of inputs is provided to the predict function" () {
     //     expect(() => {

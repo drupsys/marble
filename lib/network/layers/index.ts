@@ -1,1 +1,5 @@
 export { Layer, LayerException, Operator, create } from "./Layer"
+export { IDENTITY, IDENTITY_PRIME } from "./activations/identity"
+export { LOGISTIC, LOGISTIC_PRIME } from "./activations/logistic"
+export { TANH, TANH_PRIME } from "./activations/tanh"
+export { BENT_IDENTITY, BENT_IDENTITY_PRIME } from "./activations/bent_identity"
