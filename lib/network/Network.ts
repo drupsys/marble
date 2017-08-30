@@ -53,24 +53,24 @@ export class Network {
 
     private calcError(estimate: linear.Matrix, target: linear.Matrix) {
         let total = 0
-        target.subtract(estimate).each((x) => {
+        new linear.Matrix(target.toArray()).subtract(estimate).each((x) => {
             total += 0.5 * (x ** 2)
         })
 
         return total
     }
 
-    public train(inputs: linear.Matrix[], expectations: linear.Matrix[]) {
-        this.validateInputs(inputs, expectations, (expected, input) => {
+    public train(inputs: linear.Matrix[], targets: linear.Matrix[]) {
+        this.validateInputs(inputs, targets, (target, input) => {
             this.forwardPropagate(input, true)
-            this.backwardPropagate(expected)
+            this.backwardPropagate(target)
         })
     }
     
-    public cost(inputs: linear.Matrix[], expectations: linear.Matrix[]) {
+    public cost(inputs: linear.Matrix[], targets: linear.Matrix[]) {
         let cost = 0
-        this.validateInputs(inputs, expectations, (expected, input) => {
-            cost += this.calcError(this.forwardPropagate(input, true), expected)
+        this.validateInputs(inputs, targets, (target, input) => {
+            cost += this.calcError(this.forwardPropagate(input, false), target)
         })
 
         return cost
@@ -130,9 +130,9 @@ export class Network {
             .product(nextLayer.signal.map(nextLayer.derivative))
         console.dir(`delta: ${nextDelta.toArray()}`)
         
-        let nextChange = nextLayer.hypothesis.T.multiply(nextDelta)
-        console.dir(`hyp: ${nextLayer.hypothesis.T}`)
-        console.dir(`change: ${nextChange.toArray()}`)
+        // let nextChange = nextLayer.hypothesis.T.multiply(nextDelta)
+        // console.dir(`hyp: ${nextLayer.hypothesis.T}`)
+        // console.dir(`change: ${nextChange.toArray()}`)
         
         for (var i = this.layers.length - 2; i >= 0; i--) {
             let currentLayer = this.layers[i]
@@ -145,14 +145,14 @@ export class Network {
                 .product(currentLayer.signal.map(currentLayer.derivative))
             let currentChange = currentLayer.signal.T.multiply(currentDelta)
 
-            nextLayer.apply(nextChange, 0.01)
+            nextLayer.apply(nextDelta, 0.1)
 
             nextLayer = currentLayer
             nextDelta = currentDelta
-            nextChange = currentChange
+            // nextChange = currentChange
         }
 
-        nextLayer.apply(nextChange, 0.01)
+        nextLayer.apply(nextDelta, 0.1)
         return result
     }
 }

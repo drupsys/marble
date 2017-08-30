@@ -67,6 +67,10 @@ export class Layer {
         return this.pWeights
     }
 
+    public get bias(): linear.Matrix {
+        return this.pBias
+    }
+
     /**
      * Returns the result of a projection for this layer.
      * @param activations to be applied on the layer.
@@ -92,8 +96,9 @@ export class Layer {
     public apply(change: linear.Matrix, scale: number) {
         // console.dir(this.weights.toArray())
         // console.dir(change.toArray())
-        change = change.scale(scale).multiply(this.weights.T)
+        change = change.scale(-scale).multiply(this.weights.T)
         this.weights.subtract(change)
+        this.bias.subtract(change)
         // console.dir(this.weights.toArray())
     }
 }

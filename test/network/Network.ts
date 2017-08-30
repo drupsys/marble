@@ -18,10 +18,25 @@ class Network extends Unit {
     // ])]
 
     before() {
-        // this.network = new net.Network(3, 1, layers.LOGISTIC, layers.DLOGISTIC)
-        // this.network.addLayer(2, layers.LOGISTIC, layers.DLOGISTIC)
+        this.network = new net.Network(3, 1, layers.LOGISTIC, layers.LOGISTIC_PRIME)
+        this.network.addLayer(2, layers.LOGISTIC, layers.LOGISTIC_PRIME)
     }
 
+    @test "should make the same prediction if no weights are adjusted" () {
+        let input = new linear.Matrix([[5, 5, 5]])
+        let result = this.network.predict(input)
+
+        expect(result.toString()).to.be.eq(this.network.predict(input).toString())
+    }
+
+    @test "should calculate the same cost if no weights are adjusted" () {
+        let estimate = new linear.Matrix([[5, 5, 5]])
+        let expected = new linear.Matrix([[1]])
+        let cost = this.network.cost([estimate], [expected])
+
+        expect(cost).to.be.eq(this.network.cost([estimate], [expected]))
+    }
+    
     @test "something" () {
         let network = new net.Network(1, 1)
         let layer = new layers.Layer(1, 1, layers.BENT_IDENTITY, layers.BENT_IDENTITY_PRIME)
@@ -29,10 +44,10 @@ class Network extends Unit {
         network.setLayers([layer])
 
         let input = new linear.Matrix([[2]])
-        let expected = new linear.Matrix([[-9.35]])
+        let expected = new linear.Matrix([[9.35]])
         
         let cost = network.cost([input], [expected])
-        for (var i = 0; i <5; i++) {
+        for (var i = 0; i < 1; i++) {
             network.train([input], [expected])
         }
 
